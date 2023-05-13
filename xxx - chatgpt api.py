@@ -8,7 +8,7 @@ with open("key.txt") as f:
 # Create empty list to store message history
 history = []
 
-# Send prompt and save history for both user and assistant
+# Send prompt, receive response and save history for both user and assistant
 # API does not store any message history on their end
 def send(content):
     history.append({"role": "user", "content": content})  # save user prompt to list
@@ -19,12 +19,15 @@ def send(content):
 
 print("Type quit/q/exit for exit")
 
-while True:
+while True:  # init forever loop
     try:
         user_input = input ("> ")
-        if user_input in ['quit','exit','q']:
+        if user_input in ['quit','exit','q']:  # catch exit keywords
             break
-    except EOFError:
+    except EOFError:  # catch Ctrl+D command (EOF) and exit
+        print("\n")
+        break
+    except KeyboardInterrupt: # catch Ctrl+C command and exit
         print("\n")
         break
     assistant_output = send(user_input)
