@@ -1,0 +1,98 @@
+// yt 7KCS70sCoK0 based configuration
+// localhost:8080/env-vars.html - shows variables available from Jenkins
+CODE_CHANGES = getGitChanges()
+def gv 
+pipeline {
+
+    agent any
+
+    tools {
+        maven 'Maven' // Maven tool is defined in GUI
+    }
+
+    parameters {
+        string(name: 'VERSION_STR', defaultValue: '', description: 'version to deploy')
+        choice(name: 'VERSION_CH', choices: ['1.1.0', '1.2.0', '1.3.0'], description: '')
+        booleanParam(name: 'executeTests', defaultValue: true, description: '')
+    }
+
+    environment {
+        NEW_VERSION = '1.3.0'
+        SERVER_CREDENTIALS = credentials('server-credentials') // uses defined credentials from J GUI. 
+        // requires Credentials & Credentials Binding plugins
+    }
+
+    stages {
+
+        stage("init") {
+            steps {
+                script { // call groovy script file
+                    gv = load "script.groovy"
+                }
+            }
+        }
+
+        stage("build") {
+            when {
+                expression { // execute only when branch is dev and code changes exist
+                    BRANCH_NAME == 'dev' && CODE_CHANGES == 'true'
+                }
+            }
+            steps {
+
+                script {
+                    def var = 'groovy-var' // example of groovy script
+                    gv.buildApp()
+                }
+
+                echo "version ${NEW_VERSION}"
+                sh "mvn install"
+            }
+        }
+
+        stage("test") {
+            when {
+                expression { // execute step only when branch is dev or master
+                    params.executeTests && (BRANCH_NAME == 'dev' || BRANCH_NAME == 'master')
+                }
+            }
+            steps {
+
+                script {
+                    gv.testApp()
+                }
+                
+            }
+        }
+
+        stage("deploy") {
+            steps {
+
+                script {
+                    gv.deployApp()
+                }
+
+                withCredentials([
+                    usernamePassword(credentials: 'server-credentials', usernameVariable: USER, passwordVariable: PWD)
+                ]) {
+                    sh "some script ${USER} ${PWD}"
+                }
+
+            }
+        }
+    }
+
+    post { //execute after pipeline stages
+        always {
+            
+        }
+
+        success {
+            
+        }
+
+        failure {
+            
+        }
+    }
+}
