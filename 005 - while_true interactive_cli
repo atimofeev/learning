@@ -21,7 +21,7 @@ while True:
     except ValueError: # catch if string was entered. retries the loop from start
         print("That's not an integer. Please try again.\n")
         continue
-    except EOFError:  # catch Ctrl+D command (EOF) and exit
+    except EOFError:  # catch Ctrl+D command and exit
         print("\n")
         break
     except KeyboardInterrupt: # catch Ctrl+C command and exit

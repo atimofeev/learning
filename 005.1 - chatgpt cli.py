@@ -24,7 +24,7 @@ while True:  # init forever loop
         user_input = input ("> ")
         if user_input in ['quit','exit','q']:  # catch exit keywords
             break
-    except EOFError:  # catch Ctrl+D command (EOF) and exit
+    except EOFError:  # catch Ctrl+D command and exit
         print("\n")
         break
     except KeyboardInterrupt: # catch Ctrl+C command and exit

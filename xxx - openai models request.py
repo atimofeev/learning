@@ -3,7 +3,7 @@ import os
 
 # Get API key from OS ENV
 openai_api_key = os.getenv('OPENAI_API_KEY')
- 
+
 # Set header for GET request
 headers = {
     'Authorization': f'Bearer {openai_api_key}'
