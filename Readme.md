@@ -8,4 +8,4 @@ The repository is organized as follows:
 
 - `basics/`: This folder covers Python basics, tips and notes.
 - `chatgpt/`: Here you'll find tools to interact with OpenAI API
-- `games/`: This folder includes Python games which I've worked on in scope of learning process
+- `projects/`: This folder includes various Python projects I've worked on in scope of learning process
