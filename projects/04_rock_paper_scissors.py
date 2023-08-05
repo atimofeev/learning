@@ -3,10 +3,6 @@
 
 import random, tkinter as tk
 
-RED = "\033[91m"
-GREEN = "\033[92m"
-RESET = "\033[0m"
-
 def game(user_move):
     moves = [
         "rock",
