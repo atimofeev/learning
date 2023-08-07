@@ -73,11 +73,11 @@ def main():
     print(f"Type ({RED}q{RESET}) to quit\n")
     while True:
         show_menu()
-        user_input = input(f"Enter your choice (1-{len(menu_options)}): ")
-        print()
-        if user_input.lower() in ('q', 'quit', 'exit'):
-            break 
         try:
+            user_input = input(f"Enter your choice (1-{len(menu_options)}): ")
+            print()
+            if user_input.lower() in ('q', 'quit', 'exit'):
+                break 
             user_input = int(user_input)
             if user_input in menu_options:
                 menu_options[user_input]()
