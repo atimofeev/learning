@@ -1,3 +1,6 @@
+# Loosely based on tutorial by TechWorld with Nana
+# yt: t8pPdKYpowI
+
 DEFAULT_UNIT = "hours"
 
 TIME_UNITS = {
