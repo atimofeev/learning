@@ -14,34 +14,35 @@ TIME_UNITS = {
 
 EXIT_KEYWORDS = ['quit', 'exit', 'q']
 
-def days_to_units(days, unit=DEFAULT_UNIT):
-    if days > 0:
-        unit_conversion = TIME_UNITS.get(unit)
-        if unit_conversion is not None:
-            return f"{days} days are {days * unit_conversion} {unit}"
-        return f"'{unit}' is not a valid unit."
-    elif days == 0:
-        return "No calculation for zero."
-    else:
+def convert_days_to_units(days, unit=DEFAULT_UNIT):
+    if days < 0:
         return "Negative value entered."
+    if days == 0:
+        return "No calculation for zero."
+    
+    unit_conversion = TIME_UNITS.get(unit)
+    if unit_conversion is None:
+        return f"'{unit}' is not a valid unit."
+    
+    return f"{days} days are {days * unit_conversion} {unit}"
 
-def process_days_list(days_list_string):
-    days_set = set(days_list_string.split(','))
-    return [days_to_units_or_error(day_str.strip()) for day_str in days_set]
+def handle_list_input(user_input):
+    days_list = user_input.split(',')
+    return [convert_single_input(day.strip()) for day in days_list]
 
-def days_to_units_or_error(day_str):
+def handle_dict_input(user_input):
+    try:
+        days, unit = user_input.split(':')
+        return convert_days_to_units(int(days.strip()), unit.strip())
+    except (ValueError, TypeError):
+        return "Invalid format. Please use 'days:unit'."
+
+def convert_single_input(day_str):
     try:
         day_int = int(day_str)
-        return days_to_units(day_int)
+        return convert_days_to_units(day_int)
     except ValueError:
         return f"'{day_str}' is not a valid integer. Please try again."
-
-def process_days_and_unit(days_string):
-    try:
-        days, unit = days_string.split(':')
-        return {"days": int(days.strip()), "unit": unit.strip()}
-    except ValueError:
-        return f"Invalid format. Please use 'days:unit'."
 
 def main():
     print("Type quit/q/exit for exit")
@@ -57,19 +58,13 @@ def main():
             elif not user_input:
                 continue
             elif ',' in user_input:
-                outputs = process_days_list(user_input)
+                outputs = handle_list_input(user_input)
                 for output in outputs:
                     print(output, end="\n\n")
             elif ':' in user_input:
-                output = process_days_and_unit(user_input)
-                if isinstance(output, dict):
-                    days = output["days"]
-                    unit = output["unit"]
-                    print(days_to_units(days, unit), end="\n\n")
-                else:
-                    print(output, end="\n\n")
+                print(handle_dict_input(user_input), end="\n\n")
             else:
-                print(days_to_units_or_error(user_input), end="\n\n")
+                print(convert_single_input(user_input), end="\n\n")
         except EOFError:  # catch Ctrl+D command and exit
             break
         except KeyboardInterrupt:  # catch Ctrl+C command and exit
