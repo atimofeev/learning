@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-
-# This script will generate ChatGPT prompt using local files contents
-"""Import argsparse for accessing arguments. pyperclip for clipboard access"""
+"""With locally provided files and prompt input,
+this code will copy contents to clipboard for web ChatGPT use"""
 from argparse import ArgumentParser
 from pyperclip import copy
 
@@ -18,7 +17,8 @@ def process_files(files):
     for file in files:
         with open(file, 'r', encoding="utf-8") as f:
             content = ''.join(f.readlines())
-            processed_files.append((f"\n{file} contents:", f"\n{DELIMITER}\n{content}\n{DELIMITER}"))
+            processed_files.append((f"\n{file} contents:", \
+                f"\n{DELIMITER}\n{content}\n{DELIMITER}"))
 
 def preview_files(prompt):
     """Preview selected files"""
@@ -27,7 +27,8 @@ def preview_files(prompt):
         file_preview = '\n'.join(file.split('\n')[1:PREVIEW_LINES+1])
         print(gbold(message))
         print(file_preview)
-    if input(f"\n{bold('Do you want to proceed?')} ({gbold('y')}/{rbold('n')}): ").strip().lower() == 'y':
+    if input(f"\n{bold('Do you want to proceed?')} \
+        ({gbold('y')}/{rbold('n')}): ").strip().lower() == 'y':
         return
     else:
         exit_program()
@@ -44,7 +45,8 @@ def main(files):
     print(bold("Files to copy:")+ "\n")
     for file_path in files:
         print(file_path)
-    print(f"\n{bold('Enter your prompt')} (type '{rbold('q')}', '{rbold('quit')}', or '{rbold('exit')}' to exit):")
+    print(f"\n{bold('Enter your prompt')} (type '{rbold('q')}', \
+        '{rbold('quit')}', or '{rbold('exit')}' to exit):")
     try:
         user_prompt = input(gbold("> "))
         if user_prompt.lower() in ('q', 'quit', 'exit'):
@@ -62,12 +64,15 @@ def exit_program():
     exit()
 
 def bold(text):
+    """Helper func to make text bold"""
     return f"{BOLD}{text}{RESET}"
 
 def gbold(text):
+    """Helper func to make text green and bold"""
     return f"{GREEN}{BOLD}{text}{RESET}"
 
 def rbold(text):
+    """Helper func to make text red and bold"""
     return f"{RED}{BOLD}{text}{RESET}"
 
 if __name__ == '__main__':
