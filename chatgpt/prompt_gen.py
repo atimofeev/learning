@@ -45,8 +45,9 @@ def main(files):
     print(bold("Files to copy:")+ "\n")
     for file_path in files:
         print(file_path)
-    print(f"\n{bold('Enter your prompt')} (type '{rbold('q')}', \
-        '{rbold('quit')}', or '{rbold('exit')}' to exit):")
+    print(f"\n{bold('Enter your prompt')} "
+        f"(type '{rbold('q')}', '{rbold('quit')}', or '{rbold('exit')}' to exit):")
+
     try:
         user_prompt = input(gbold("> "))
         if user_prompt.lower() in ('q', 'quit', 'exit'):
