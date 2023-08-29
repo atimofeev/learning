@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""With locally provided files and prompt input,
-this code will copy contents to clipboard for web ChatGPT use"""
+"""Prompt CLIPboard helper.
+With locally provided files and prompt input
+will copy contents to clipboard for web ChatGPT use."""
 from argparse import ArgumentParser
 from pyperclip import copy
 
