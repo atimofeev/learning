@@ -34,9 +34,9 @@ def split_data(data, max_length):
 
 def validate_file_paths(file_paths):
     valid_files = []
-    for f in file_paths:
-        print(gbold(f) if os.path.exists(f) else rbold(f"{f}: file not found"))
-        if os.path.exists(f): valid_files.append(f)
+    for file in file_paths:
+        print(gbold(file) if os.path.exists(file) else rbold(f"{file}: file not found"))
+        if os.path.exists(file): valid_files.append(file)
     if not valid_files:
         print(rbold("No existing files found. Exiting."))
         exit()
