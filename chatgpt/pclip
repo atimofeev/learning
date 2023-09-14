@@ -2,6 +2,8 @@
 """Prompt CLIPboard helper.
 With locally provided files and prompt input
 will copy contents to clipboard for web ChatGPT use."""
+#TODO: Chunks are not split on line basis
+#TODO: Char limit does not work for Ukrainian language
 import os
 from argparse import ArgumentParser
 from pyperclip import copy
