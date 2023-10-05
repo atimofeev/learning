@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+"""Show old and new downloaded files in colors."""
 import os
 from datetime import datetime
 from datetime import timedelta
@@ -18,15 +20,16 @@ expire_timestamp = expire_date.timestamp()
 
 for item in FILES:
     full_path = os.path.join(FILES_FOLDER, item)
-    timestamps.append((os.path.getatime(full_path), \
-        os.path.getctime(full_path), os.path.getmtime(full_path), full_path))
+    timestamps.append((os.path.getatime(full_path),
+                       os.path.getctime(full_path),
+                       os.path.getmtime(full_path), full_path))
     # create list of tuples with timestamps and path
 
 for timestamp in timestamps:
     filepath = timestamp[-1]
     if any(time <= expire_timestamp for time in timestamp[:-1]):
         # iterate 'time' through remaining tuples of 'timestamp'
-        print(f"{BOLD}{RED}{filepath}{RESET}") 
+        print(f"{BOLD}{RED}{filepath}{RESET}")
         # files older than DAYS_TO_EXPIRE will be colored red
     else:
         print(f"{BOLD}{GREEN}{filepath}{RESET}")
