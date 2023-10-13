@@ -1,16 +1,23 @@
-# 18 Python Projects for your Resume
-# №9 Quiz Game
+"""Quiz Game.
 
-import random, copy
+№9: 18 Python Projects for your Resume
+"""
+import random
+import copy
 
 RED = "\033[91m"
 GREEN = "\033[92m"
 RESET = "\033[0m"
 
+
 class QuizItem:
+    """Simple quiz items implementation."""
+
     def __init__(self, question, answer):
+        """Quiz item init."""
         self.question = question
         self.answer = answer
+
 
 quiz_items = [
     QuizItem("What is the capital of France?", "Paris"),
@@ -35,12 +42,16 @@ quiz_items = [
     QuizItem("Which mammal is capable of true flight?", "Bat")
 ]
 
+
 def show_menu():
+    """Show menu."""
     print("Quiz Game")
     print("1. Start Quiz")
     print("2. Show Questions")
 
+
 def start_quiz():
+    """Handle game logic."""
     correct_counter = 0
     num_of_questions = 5
     rnd_quiz_items = copy.deepcopy(quiz_items)
@@ -53,14 +64,21 @@ def start_quiz():
             correct_counter += 1
         else:
             print(f"\n{RED}{item.answer}{RESET}\n")
-    print(f"Quiz completed!\nCorrect answers: {correct_counter}/{num_of_questions}")
+    print(
+        f"Quiz completed!\nCorrect answers: "
+        f"{correct_counter}/{num_of_questions}"
+    )
     print()
 
+
 def show_questions():
+    """Display questions list."""
     for item in quiz_items:
         print(f"{GREEN}{item.question}{RESET}")
 
+
 def main():
+    """Interactively handle user input."""
     menu_options = {
         1: start_quiz,
         2: show_questions
@@ -72,7 +90,7 @@ def main():
             user_input = input(f"Enter your choice (1-{len(menu_options)}): ")
             print()
             if user_input.lower() in ('q', 'quit', 'exit'):
-                break 
+                break
             user_input = int(user_input)
             if user_input in menu_options:
                 menu_options[user_input]()
@@ -85,7 +103,10 @@ def main():
             print()
             break
 
+
 def print_error(message):
+    """Print colored error message."""
     print(f"\n{RED}{message}{RESET}\n")
+
 
 main()

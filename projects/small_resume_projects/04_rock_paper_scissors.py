@@ -1,9 +1,13 @@
-# 18 Python Projects for your Resume
-# №4: Rock Paper Scissors
+"""Rock Paper Scissors game.
 
-import random, tkinter as tk
+№4: 18 Python Projects for your Resume
+"""
+import random
+import tkinter as tk
+
 
 def game(user_move):
+    """Handle user moves and game logic."""
     moves = [
         "rock",
         "paper",
@@ -27,6 +31,7 @@ def game(user_move):
     opponent_label.config(text=f"Opponent: {opponent_move}")
     result_label.config(text=result, bg=color)
 
+
 # Create window with buttons and labels
 root = tk.Tk()
 root.title("Rock Paper Scissors")
@@ -41,13 +46,14 @@ rock_button.pack(side=tk.LEFT)
 paper_button = tk.Button(frame, text="Paper", command=lambda: game("paper"))
 paper_button.pack(side=tk.LEFT)
 
-scissors_button = tk.Button(frame, text="Scissors", command=lambda: game("scissors"))
+scissors_button = tk.Button(frame, text="Scissors",
+                            command=lambda: game("scissors"))
 scissors_button.pack(side=tk.LEFT)
 
 vertical_frame = tk.Frame(root)
 vertical_frame.pack()
 
-exit_button  = tk.Button(vertical_frame, text="Exit", command=root.quit)
+exit_button = tk.Button(vertical_frame, text="Exit", command=root.quit)
 exit_button.pack()
 
 opponent_label = tk.Label(vertical_frame, text="Opponent: ")

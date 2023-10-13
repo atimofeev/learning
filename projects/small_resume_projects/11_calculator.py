@@ -1,6 +1,7 @@
-# 18 Python Projects for your Resume
-# №11 Calculator
+"""Calculator.
 
+№11: 18 Python Projects for your Resume
+"""
 RED = "\033[91m"
 GREEN = "\033[92m"
 RESET = "\033[0m"
@@ -12,18 +13,26 @@ OPERATIONS = {
     '/': lambda a, b: a / b if b != 0 else print_error("Division by zero")
 }
 
+
 class Operate:
+    """Calculator operations implementation."""
+
     def __init__(self, a, b, op):
+        """Operate init."""
         self.a = float(a)
         self.b = float(b)
         self.op = op
 
     def calculate(self):
-        result = OPERATIONS.get(self.op, lambda: print_error("Unsupported operation"))(self.a, self.b)
+        """Perform calculation and print result."""
+        result = OPERATIONS.get(
+            self.op, lambda: print_error("Unsupported operation")
+        )(self.a, self.b)
         print(f"{GREEN}{self.a} {self.op} {self.b} = {result}{RESET}")
 
 
 def select_op(usr_input):
+    """Parse user entered operation and operate."""
     found_ops = [op for op in OPERATIONS if op in usr_input]
     if len(found_ops) == 1:
         sel_op = found_ops[0]
@@ -43,10 +52,12 @@ def select_op(usr_input):
 
 
 def main():
+    """Interactively handle user input."""
     print(f"Type ({RED}q{RESET}) to quit\n")
     while True:
         try:
-            user_input = input(f"Available calc operations: (+ - * /)\nEnter expression: ")
+            user_input = input(
+                "Available calc operations: (+ - * /)\nEnter expression: ")
             print()
             if user_input.lower() in ('q', 'quit', 'exit'):
                 break
@@ -58,7 +69,10 @@ def main():
             print()
             break
 
+
 def print_error(message):
+    """Print colored error message."""
     print(f"\n{RED}{message}{RESET}\n")
+
 
 main()

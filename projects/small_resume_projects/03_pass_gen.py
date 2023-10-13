@@ -1,7 +1,9 @@
-# 18 Python Projects for your Resume
-# №3: Password Generator
+"""Password Generator.
 
-import random, string
+№3: 18 Python Projects for your Resume
+"""
+import random
+import string
 
 RED = "\033[91m"
 GREEN = "\033[92m"
@@ -9,7 +11,9 @@ RESET = "\033[0m"
 
 MIN_PASS_LEN = 8
 
+
 def generate_pass(pwd_len):
+    """Randomly generate password from 4 types."""
     types = [
         string.ascii_lowercase,
         string.ascii_uppercase,
@@ -23,7 +27,9 @@ def generate_pass(pwd_len):
         pwd = new_pwd
     print(f"{GREEN}{pwd}{RESET}")
 
+
 def main():
+    """Interactively handle user input."""
     print(f"Type ({RED}q{RESET}) to quit\n")
     while True:
         try:
@@ -48,5 +54,6 @@ def main():
         except EOFError:
             print()
             break
+
 
 main()

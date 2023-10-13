@@ -1,6 +1,7 @@
-# 18 Python Projects for your Resume
-# №2: To-Do List Manager
+"""To-Do List Manager.
 
+№2: 18 Python Projects for your Resume
+"""
 tasks = [
     "Buy groceries",
     "Walk the dog",
@@ -12,20 +13,26 @@ RED = "\033[91m"
 GREEN = "\033[92m"
 RESET = "\033[0m"
 
+
 def show_menu():
+    """Display menu options."""
     print("To-Do List Manager")
     print("1. Add Task")
     print("2. Show Tasks")
     print("3. Mark Task as Completed")
     print("4. Delete Task")
 
+
 def add_task():
+    """Add new task to task list."""
     new_task = input("Enter task name: ")
     if new_task != "":
         tasks.append(new_task)
     print()
 
+
 def show_tasks():
+    """Show current tasks list."""
     if not tasks:
         print_error("There are no tasks available")
         return
@@ -36,7 +43,9 @@ def show_tasks():
         print(f"{i}. {GREEN}{item}{RESET}")
     print()
 
+
 def select_task(task_action):
+    """Task selection for mark/delete action."""
     while True:
         if not tasks:
             print_error(f"There are no tasks to {task_action}")
@@ -57,7 +66,9 @@ def select_task(task_action):
         except ValueError:
             continue
 
+
 def mark_completed():
+    """Mark task completed."""
     task = select_task("mark")
     if task is not None:
         if tasks[task].endswith("✅"):
@@ -67,7 +78,9 @@ def mark_completed():
         print(f"{GREEN}{tasks[task]}{RESET}\n")
     return
 
+
 def delete_task():
+    """Delete selected task."""
     task = select_task("delete")
     if task is not None:
         temp_task_var = tasks[task]
@@ -75,7 +88,9 @@ def delete_task():
         print(f"\nTask {GREEN}{temp_task_var}{RESET} was removed\n")
     return
 
+
 def main():
+    """Interactively handle user input."""
     menu_options = {
         1: add_task,
         2: show_tasks,
@@ -89,7 +104,7 @@ def main():
             user_input = input("Enter your choice (1-4): ")
             print()
             if user_input.lower() in ('q', 'quit', 'exit'):
-                break 
+                break
             user_input = int(user_input)
             menu_options[user_input]()
         except KeyError:
@@ -103,7 +118,10 @@ def main():
             print()
             break
 
+
 def print_error(message):
+    """Print colored error."""
     print(f"\n{RED}{message}{RESET}\n")
+
 
 main()

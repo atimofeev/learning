@@ -1,11 +1,16 @@
-# 18 Python Projects for your Resume
-# №6: Hangman
+"""Hangman game.
 
-import random, tkinter as tk
+№6: 18 Python Projects for your Resume
+"""
+import random
+import tkinter as tk
 
-WORD_LIST = ["elephant", "guitar", "computer", "umbrella", "kangaroo", "bicycle", "mountain", "pineapple", "waterfall", "chocolate"]
+WORD_LIST = ["elephant", "guitar", "computer", "umbrella", "kangaroo",
+             "bicycle", "mountain", "pineapple", "waterfall", "chocolate"]
+
 
 def draw_hangman(attempts):
+    """Draw hanged man in stages."""
     stages = [
         """
            -----
@@ -74,16 +79,20 @@ def draw_hangman(attempts):
     ]
     return stages[attempts]
 
+
 def guess(letter):
+    """Game logic."""
     global attempts
     letter_entry.delete(0, 'end')
     current_word_label = word_label.cget("text")
-    if (not letter 
-        or letter.isdigit() 
-        or letter in current_word_label 
-        or "_" not in current_word_label 
-        or len(letter) > 1 
-        or attempts >= 7):
+    if (
+        not letter
+        or letter.isdigit()
+        or letter in current_word_label
+        or "_" not in current_word_label
+        or len(letter) > 1
+        or attempts >= 7
+    ):
         return
 
     if letter in word:
@@ -104,10 +113,11 @@ def guess(letter):
         attempts += 1
         hangman_text.delete('1.0', tk.END)
         hangman_text.insert(tk.END, draw_hangman(attempts))
-        
+
         if attempts >= 7:
             hangman_text.delete('1.0', tk.END)
             hangman_text.insert(tk.END, f"Game over!\nThe word was: {word}")
+
 
 window = tk.Tk()
 attempts = 0
@@ -127,7 +137,8 @@ letter_entry = tk.Entry(window)
 letter_entry.pack()
 
 # Button for guessing
-guess_button = tk.Button(window, text="Guess", command=lambda: guess(letter_entry.get()))
+guess_button = tk.Button(window, text="Guess",
+                         command=lambda: guess(letter_entry.get()))
 guess_button.pack()
 
 window.mainloop()

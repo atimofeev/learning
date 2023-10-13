@@ -1,34 +1,44 @@
-# 18 Python Projects for your Resume
-# №5: Tic-Tac-Toe
+"""Tic-Tac-Toe game.
 
-import random, tkinter as tk
+№5: 18 Python Projects for your Resume
+"""
+import random
+import tkinter as tk
 
 matrix = [
-    [1,2,3],
-    [4,5,6],
-    [7,8,9]
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
 ]
-
 won = False
 
+
 def button_press(button_id):
-    if won == False:
+    """Handle user button press."""
+    if not won:
         if buttons[button_id].cget("text") not in ["X", "O"]:
             buttons[button_id].config(text="X")
             combo_check()
             opponent_move()
 
+
 def read_buttons():
+    """Read button labels into matrix."""
     button_matrix = matrix
     button = 1
     for row in range(3):
         for column in range(3):
             # fill button_matrix with X/O or with digits
-            button_matrix[row][column] = button if buttons[button].cget("text") not in ["X", "O"] else buttons[button].cget("text")
+            button_matrix[row][column] = (
+                button if buttons[button].cget("text") not in ["X", "O"]
+                else buttons[button].cget("text")
+            )
             button += 1
     return button_matrix
 
+
 def opponent_move():
+    """Move opponent via random button selection."""
     button_matrix = read_buttons()
     available_moves = []
     for row in range(3):
@@ -38,12 +48,14 @@ def opponent_move():
     if available_moves:
         move_row, move_column = random.choice(available_moves)
         button_id = matrix[move_row][move_column]
-        buttons[button_id].config(text="O") # Make the move
+        buttons[button_id].config(text="O")
     else:
         result_label.config(text="Game over!")
     combo_check()
 
+
 def combo_check():
+    """Divide button matrix into rows, columns and diagonal lines."""
     button_matrix = read_buttons()
     # Rows and columns
     for i in range(3):
@@ -57,7 +69,9 @@ def combo_check():
     check_win(diag1)
     check_win(diag2)
 
+
 def check_win(combo):
+    """Check if win conditions were met on requested row,column or diagonal."""
     global won
     if all(x == combo[0] for x in combo):
         won = True
@@ -66,12 +80,15 @@ def check_win(combo):
         elif combo[0] == "O":
             result_label.config(text="You lose!")
 
+
 def reset_buttons():
+    """Reset game state."""
     global won
     won = False
     result_label.config(text="")
-    for i in range(1,10):
+    for i in range(1, 10):
         buttons[i].config(text="   ")
+
 
 root = tk.Tk()
 root.title("Tic-Tac-Toe")
@@ -81,15 +98,15 @@ button_frame = tk.Frame(root)
 button_frame.pack()
 
 buttons = {
-    1:tk.Button(button_frame, text="   ", command=lambda: button_press(1)),
-    2:tk.Button(button_frame, text="   ", command=lambda: button_press(2)),
-    3:tk.Button(button_frame, text="   ", command=lambda: button_press(3)),
-    4:tk.Button(button_frame, text="   ", command=lambda: button_press(4)),
-    5:tk.Button(button_frame, text="   ", command=lambda: button_press(5)),
-    6:tk.Button(button_frame, text="   ", command=lambda: button_press(6)),
-    7:tk.Button(button_frame, text="   ", command=lambda: button_press(7)),
-    8:tk.Button(button_frame, text="   ", command=lambda: button_press(8)),
-    9:tk.Button(button_frame, text="   ", command=lambda: button_press(9))
+    1: tk.Button(button_frame, text="   ", command=lambda: button_press(1)),
+    2: tk.Button(button_frame, text="   ", command=lambda: button_press(2)),
+    3: tk.Button(button_frame, text="   ", command=lambda: button_press(3)),
+    4: tk.Button(button_frame, text="   ", command=lambda: button_press(4)),
+    5: tk.Button(button_frame, text="   ", command=lambda: button_press(5)),
+    6: tk.Button(button_frame, text="   ", command=lambda: button_press(6)),
+    7: tk.Button(button_frame, text="   ", command=lambda: button_press(7)),
+    8: tk.Button(button_frame, text="   ", command=lambda: button_press(8)),
+    9: tk.Button(button_frame, text="   ", command=lambda: button_press(9))
 }
 
 buttons[1].grid(row=0, column=0)

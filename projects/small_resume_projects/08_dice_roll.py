@@ -1,11 +1,16 @@
-# 18 Python Projects for your Resume
-# №8 Dice Roll
+"""Dice Roll.
 
-import random, tkinter as tk
+№8: 18 Python Projects for your Resume
+"""
+import random
+import tkinter as tk
+
 
 def roll():
-    result = random.randint(1,6)
+    """Roll 6-faced dice."""
+    result = random.randint(1, 6)
     result_label.config(text=result)
+
 
 frame = tk.Frame()
 frame.pack()
