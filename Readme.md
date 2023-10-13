@@ -7,5 +7,4 @@ Hello there! This repository is dedicated to my ongoing journey learning Python.
 The repository is organized as follows:
 
 - `basics/`: This folder covers Python basics, tips and notes.
-- `chatgpt/`: Here you'll find tools to interact with OpenAI API
 - `projects/`: This folder includes various Python projects I've worked on in scope of learning process
