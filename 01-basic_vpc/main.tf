@@ -1,71 +1,79 @@
 # Basic VPC with 2xEC2 - 1xPublic, 1xPrivate
 # Public EC2 hosts Hello World! message via HTTP
 # credentials are provided with ~/.aws/credentials
+terraform {
+  required_providers {
+    aws = {
+      source  = "registry.terraform.io/hashicorp/aws"
+      version = "5.13.1"
+    }
+    http = {
+      source  = "registry.terraform.io/hashicorp/http"
+      version = "3.4.0"
+    }
+  }
+  required_version = "1.5.4"
+}
+
 provider "aws" {
   region = "eu-north-1"
 }
 
-resource "aws_vpc" "test-vpc" {
+resource "aws_vpc" "test_vpc" {
   cidr_block = "10.0.0.0/16"
   tags = {
-    Name = "test-vpc"
+    Name = "test_vpc"
   }
 }
 
-resource "aws_internet_gateway" "test-public-gw" {
-  vpc_id = aws_vpc.test-vpc.id
+resource "aws_internet_gateway" "test_public_gw" {
+  vpc_id = aws_vpc.test_vpc.id
   tags = {
-    Name = "test-public-gw"
+    Name = "test_public_gw"
   }
 }
 
-resource "aws_route_table" "test-public-rt" {
-  vpc_id = aws_vpc.test-vpc.id
+resource "aws_route_table" "test_public_rt" {
+  vpc_id = aws_vpc.test_vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.test-public-gw.id
+    gateway_id = aws_internet_gateway.test_public_gw.id
   }
   tags = {
-    Name = "test-public-rt"
+    Name = "test_public_rt"
   }
 }
 
-resource "aws_subnet" "test-public-sn-a" {
-  vpc_id = aws_vpc.test-vpc.id
+resource "aws_subnet" "test_public_sn_a" {
+  vpc_id = aws_vpc.test_vpc.id
   cidr_block = "10.0.1.0/24"
   availability_zone = "eu-north-1a"
   tags = {
-    Name = "test-public-sn-a"
+    Name = "test_public_sn_a"
   }
 }
 
-resource "aws_subnet" "test-private-sn-b" {
-  vpc_id = aws_vpc.test-vpc.id
+resource "aws_subnet" "test_private_sn_b" {
+  vpc_id = aws_vpc.test_vpc.id
   cidr_block = "10.0.2.0/24"
   availability_zone = "eu-north-1b"
   tags = {
-    Name = "test-private-sn-b"
+    Name = "test_private_sn_b"
   }
 }
 
-resource "aws_route_table_association" "test-public-rt-ass" {
-  subnet_id = aws_subnet.test-public-sn-a.id
-  route_table_id = aws_route_table.test-public-rt.id
-}
-
-variable "ingress_ports" {
-  description = "List of ports for ingress rules"
-  type        = list(number)
-  default     = [22, 80, 443]
+resource "aws_route_table_association" "test_public_rt_ass" {
+  subnet_id = aws_subnet.test_public_sn_a.id
+  route_table_id = aws_route_table.test_public_rt.id
 }
 
 data "http" "myip" {
-url = "http://ipv4.icanhazip.com"
+  url = "http://ipv4.icanhazip.com"
 }
 
-resource "aws_security_group" "test-public-sg" {
+resource "aws_security_group" "test_public_sg" {
   name = "allow web traffic"
-  vpc_id = aws_vpc.test-vpc.id
+  vpc_id = aws_vpc.test_vpc.id
 
   dynamic "ingress" {
     for_each = var.ingress_ports
@@ -85,13 +93,13 @@ resource "aws_security_group" "test-public-sg" {
   }
 
   tags = {
-    Name = "test-public-sg"
+    Name = "test_public_sg"
   }
 }
 
-resource "aws_security_group" "test-private-sg" {
+resource "aws_security_group" "test_private_sg" {
   name = "allow local ssh"
-  vpc_id = aws_vpc.test-vpc.id
+  vpc_id = aws_vpc.test_vpc.id
 
   ingress {
     from_port   = 22
@@ -108,61 +116,61 @@ resource "aws_security_group" "test-private-sg" {
   }
 
   tags = {
-    Name = "test-private-sg"
+    Name = "test_private_sg"
   }
 }
 
-resource "aws_network_interface" "test-public-ni" {
-  subnet_id = aws_subnet.test-public-sn-a.id
+resource "aws_network_interface" "test_public_ni" {
+  subnet_id = aws_subnet.test_public_sn_a.id
   private_ips = ["10.0.1.50"]
-  security_groups = [ aws_security_group.test-public-sg.id ]
+  security_groups = [ aws_security_group.test_public_sg.id ]
   tags = {
-    Name = "test-public-ni"
+    Name = "test_public_ni"
   }
 }
 
-resource "aws_network_interface" "test-private-ni" {
-  subnet_id = aws_subnet.test-private-sn-b.id
+resource "aws_network_interface" "test_private_ni" {
+  subnet_id = aws_subnet.test_private_sn_b.id
   private_ips = ["10.0.2.25"]
-  security_groups = [ aws_security_group.test-private-sg.id ]
+  security_groups = [ aws_security_group.test_private_sg.id ]
   tags = {
-    Name = "test-private-ni"
+    Name = "test_private_ni"
   }
 }
 
-resource "aws_eip" "test-public-ip-address" {
+resource "aws_eip" "test_public_ip_address" {
   domain = "vpc"
-  network_interface = aws_network_interface.test-public-ni.id
-  associate_with_private_ip = aws_network_interface.test-public-ni.private_ip
-  depends_on = [ aws_internet_gateway.test-public-gw ]
+  network_interface = aws_network_interface.test_public_ni.id
+  associate_with_private_ip = aws_network_interface.test_public_ni.private_ip
+  depends_on = [ aws_internet_gateway.test_public_gw ]
   tags = {
-    Name = "test-public-ip-address"
+    Name = "test_public_ip_address"
   }
 }
 
-resource "aws_key_pair" "test-public-key" {
-  key_name   = "test-public-key"
-  public_key = file("~/.ssh/test-public-key.pub")
+resource "aws_key_pair" "test_public_key" {
+  key_name   = "test_public_key"
+  public_key = file("~/.ssh/test_public_key.pub")
 }
 
-resource "aws_key_pair" "test-private-key" {
-  key_name   = "test-private-key"
-  public_key = file("~/.ssh/test-private-key.pub")
+resource "aws_key_pair" "test_private_key" {
+  key_name   = "test_private_key"
+  public_key = file("~/.ssh/test_private_key.pub")
 }
 
-data "aws_key_pair" "private-key" {
-  key_name   = "private-key"
+data "aws_key_pair" "private_key" {
+  key_name   = "private_key"
 }
 
-resource "aws_instance" "test-public-instance" {
+resource "aws_instance" "test_public_instance" {
   ami           = "ami-04e4606740c9c9381"
   instance_type = "t3.micro"
   availability_zone = "eu-north-1a"
-  key_name = aws_key_pair.test-public-key.key_name
+  key_name = aws_key_pair.test_public_key.key_name
 
   network_interface {
     device_index = 0
-    network_interface_id = aws_network_interface.test-public-ni.id
+    network_interface_id = aws_network_interface.test_public_ni.id
   }
 
   user_data = <<-EOF
@@ -176,24 +184,24 @@ resource "aws_instance" "test-public-instance" {
               EOF
 
   tags = {
-    Name = "test-public-instance"
+    Name = "test_public_instance"
     test_tag = "test_tag_value"
   }
 }
 
-resource "aws_instance" "test-private-instance" {
+resource "aws_instance" "test_private_instance" {
   ami           = "ami-04e4606740c9c9381"
   instance_type = "t3.micro"
   availability_zone = "eu-north-1b"
-  key_name = data.aws_key_pair.private-key.key_name
+  key_name = data.aws_key_pair.private_key.key_name
 
   network_interface {
     device_index = 0
-    network_interface_id = aws_network_interface.test-private-ni.id
+    network_interface_id = aws_network_interface.test_private_ni.id
   }
 
   tags = {
-    Name = "test-private-instance"
+    Name = "test_private_instance"
     test_tag = "test_tag_value2"
   }
 }
