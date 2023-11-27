@@ -1,0 +1,84 @@
+#+title: Terraform Assignment Repository
+* Table of Contents :toc:
+- [[#overview][Overview]]
+- [[#structure][Structure]]
+- [[#implementation-initial-setup][Implementation initial setup]]
+
+* Overview
+This repository contains Terraform configurations for setting up various AWS resources.
+It demonstrates the use of Terraform modules to create a scalable and maintainable infrastructure.
+
+* Structure
+The repository is organized into several modules, each responsible for a specific set of AWS resources. Here's a brief overview of each module:
+1. AWS VPC and Networking:
+   - Creates a VPC with specified CIDR block.
+   - Sets up public and private subnets across two availability zones.
+   - Configures an Internet Gateway for the VPC and routing tables for public and private subnets.
+   - Establishes AWS VPC Endpoints for ECR API and ECR DKR for private subnet access.
+
+2. Application Load Balancer (ALB):
+   - Provisions an Application Load Balancer.
+   - Configures listener and listener rules for routing traffic.
+   - Sets up a target group for the ALB to route traffic to the ECS service.
+
+3. Identity and Access Management (IAM):
+   - CodeBuild IAM Role and Policy (codebuild.tf): Defines permissions for AWS CodeBuild, including access to ECR and S3.
+   - ECS Task Execution Role and Policy (ecs.tf): Sets up IAM roles for ECS tasks, granting necessary permissions for S3, KMS, ECR, and CloudWatch Logs.
+
+4. Elastic Container Registry (ECR):
+   - Creates an ECR repository for storing Docker images.
+   - Implements a lifecycle policy to manage image versions.
+
+5. AWS CodeBuild:
+   - Sets up a CodeBuild project for continuous integration.
+   - Configures build artifacts to be stored in an S3 bucket.
+
+6. Elastic Container Service (ECS):
+   - Creates an ECS cluster.
+   - Defines an ECS task definition and service for running containerized applications.
+   - Integrates with the ALB for load balancing.
+   - Configures CloudWatch Logs for logging.
+
+7. S3 Buckets for Storage:
+   - Creates two S3 buckets: one for image storage with KMS encryption and another for build artifacts.
+
+8. Security Groups:
+   - Defined within the network and ECS modules, these security groups control inbound and outbound traffic for the ALB and ECS tasks.
+
+This infrastructure setup is ideal for a containerized application deployment, with continuous integration via CodeBuild, and high availability and scalability provided by ECS and ALB.
+
+* Implementation initial setup
+- Create policy for TF user ::
+#+begin_src yaml
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:*",
+                "ecs:*",
+                "ecr:*",
+                "elasticloadbalancing:*",
+                "ec2:*",
+                "iam:*",
+                "codebuild:*",
+                "kms:*",
+                "logs:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+#+end_src
+- Create TF user and key for TF ::
+- Create tfstate S3 bucket ::
+#+begin_src sh
+$ aws s3api create-bucket --bucket tfstate-80f05283 --region eu-north-1 --create-bucket-configuration LocationConstraint=eu-north-1
+{
+    "Location": "http://tfstate-80f05283.s3.amazonaws.com/"
+}
+$ aws s3api put-bucket-versioning --bucket tfstate-80f05283 --versioning-configuration Status=Enabled
+$ aws s3api put-public-access-block --bucket tfstate-80f05283 \
+    --public-access-block-configuration "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+#+end_src
