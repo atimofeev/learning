@@ -1,0 +1,9 @@
+[all:vars]
+ansible_become_pass=***
+
+[control]
+18.212.206.131
+
+[node]
+54.227.39.234
+34.207.114.208

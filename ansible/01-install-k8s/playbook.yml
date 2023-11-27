@@ -1,0 +1,196 @@
+---
+- name: Install containerd
+  hosts: all
+  become: true
+  tasks:
+    - name: Enable kernel modules
+      copy:
+        dest: /etc/modules-load.d/containerd.conf
+        content: |
+          overlay
+          br_netfilter
+
+    - name: Load kernel modules
+      modprobe:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - overlay
+        - br_netfilter
+
+    - name: Add K8s networking settings
+      copy:
+        dest: /etc/sysctl.d/99-kubernetes-cri.conf
+        content: |
+          net.bridge.bridge-nf-call-iptables=1
+          net.ipv4.ip_forward=1
+          net.bridge.bridge-nf-call-ip6tables=1
+      notify:
+        - sysctl-reload
+
+    - name: Install containerd package
+      apt:
+        name: containerd
+        update_cache: yes
+        state: latest
+
+    - name: Create containerd configuration directory
+      file:
+        path: /etc/containerd
+        state: directory
+
+    - name: Create containerd default configuration
+      shell: containerd config default | tee /etc/containerd/config.toml
+      args:
+        creates: /etc/containerd/config.toml
+      notify:
+        - containerd-restart
+
+    - name: Disable swap permanently, persist reboots
+      replace:
+        path: /etc/fstab
+        regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+        replace: '#\1\2\3swap\4'
+        backup: yes
+      notify:
+        - turn-off-swap
+
+  handlers:
+    - name: sysctl-reload
+      sysctl:
+        reload: true
+        sysctl_file: /etc/sysctl.d/99-kubernetes-cri.conf
+
+    - name: containerd-restart
+      service:
+        name: containerd
+        state: restarted
+
+    - name: turn-off-swap
+      command: swapoff -a
+
+- name: Install Kubernetes
+  hosts: all
+  become: true
+  tasks:
+    - name: Install required packages for apt
+      apt:
+        name:
+          - apt-transport-https
+          - curl
+        update_cache: yes
+
+    - name: Add Kubernetes GPG key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Add Kubernetes repository
+      apt_repository:
+        repo: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+        state: present
+
+    - name: Install Kubernetes packages
+      apt:
+        name: "{{ item }}={{ version }}"
+        state: present
+        update_cache: yes
+        allow_downgrade: yes
+      loop:
+        - kubectl
+        - kubelet
+        - kubeadm
+      vars:
+        version: "1.27.0-00"
+
+    - name: Hold Kubernetes package versions
+      dpkg_selections:
+        name: "{{ item }}"
+        selection: hold
+      loop:
+        - kubectl
+        - kubelet
+        - kubeadm
+
+- name: Initialize cluster
+  hosts: control
+  become: true
+  tasks:
+    - name: Check if kubeadm init has already run
+      command: kubectl get nodes
+      register: kubeadm_init_check
+      ignore_errors: true
+      changed_when: false
+
+    - name: Init cluster with kubeadm
+      command: kubeadm init --pod-network-cidr 192.168.0.0/16 --kubernetes-version 1.27.0
+      when: kubeadm_init_check is failed
+
+- name: Setup kubeconfig
+  hosts: control
+  become: true
+  tasks:
+    - name: Ensure .kube directory exists
+      file:
+        path: "{{ ansible_env.PWD }}/.kube"
+        state: directory
+        mode: '0755'
+
+    - name: Copy admin.conf to user's .kube directory
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ ansible_env.PWD }}/.kube/config"
+        remote_src: yes
+        owner: "{{ ansible_env.SUDO_USER }}"
+        group: "{{ ansible_env.SUDO_USER }}"
+        mode: '0644'
+
+- name: Install the Calico Network Add-On
+  hosts: control
+  become: false
+  tasks:
+    - name: Apply manifest file
+      command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+    - name: Wait for Control node Ready status
+      shell: kubectl get nodes --no-headers | awk '{print $2}' | grep -v "Ready"
+      register: not_ready_nodes
+      failed_when: not_ready_nodes.stdout != ""
+      retries: 5
+      delay: 60
+      until: not_ready_nodes is succeeded
+
+- name: Generate Join Token for Worker Nodes
+  hosts: control
+  become: false
+  tasks:
+    - name: Create token
+      command: kubeadm token create --print-join-command
+      register: kubeadm_token
+      changed_when: false
+      check_mode: no
+
+    - name: Set join command as fact
+      set_fact:
+        join_command: "{{ kubeadm_token.stdout }}"
+      run_once: true
+
+- name: Join the Worker Nodes to the Cluster
+  hosts: node
+  become: true
+  tasks:
+    - name: Join Cluster
+      command: "{{ hostvars['control'][0].join_command }}"
+      changed_when: "'This node has joined the cluster' not in join_cluster_result.stdout"
+      register: join_cluster_result
+
+- name: Check All Nodes Status
+  hosts: control
+  become: false
+  tasks:
+    - name: Wait for All Nodes Ready Status
+      shell: kubectl get nodes --no-headers | awk '{print $2}' | grep -v "Ready"
+      register: not_ready_nodes
+      failed_when: not_ready_nodes.stdout != ""
+      retries: 5
+      delay: 60
+      until: not_ready_nodes is succeeded
