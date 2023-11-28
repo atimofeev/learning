@@ -1,22 +1,8 @@
 # Basic VPC with 2xEC2 - 1xPublic, 1xPrivate
 # Public EC2 hosts Hello World! message via HTTP
 # credentials are provided with ~/.aws/credentials
-terraform {
-  required_providers {
-    aws = {
-      source  = "registry.terraform.io/hashicorp/aws"
-      version = "5.13.1"
-    }
-    http = {
-      source  = "registry.terraform.io/hashicorp/http"
-      version = "3.4.0"
-    }
-  }
-  required_version = "1.5.4"
-}
-
 provider "aws" {
-  region = "eu-north-1"
+  region = var.aws_region
 }
 
 resource "aws_vpc" "test_vpc" {
