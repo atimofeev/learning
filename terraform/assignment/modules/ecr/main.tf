@@ -10,7 +10,7 @@ resource "aws_ecr_repository" "main" {
 resource "aws_ecr_lifecycle_policy" "image_rotation" {
   repository = aws_ecr_repository.main.name
 
-  policy     = <<EOF
+  policy = <<EOF
 {
   "rules": [
     {

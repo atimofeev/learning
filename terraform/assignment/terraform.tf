@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    bucket = "tfstate-80f05283"
+    bucket  = "tfstate-80f05283"
     encrypt = true
-    key = "terraform.tfstate"
-    region = "eu-north-1"
+    key     = "terraform.tfstate"
+    region  = "eu-north-1"
   }
   required_providers {
     aws = {
@@ -11,7 +11,7 @@ terraform {
       version = "5.26.0"
     }
     random = {
-      source = "hashicorp/random"
+      source  = "hashicorp/random"
       version = "3.5.1"
     }
   }

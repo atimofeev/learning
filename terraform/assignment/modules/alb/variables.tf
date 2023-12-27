@@ -12,7 +12,7 @@ variable "vpc_id" {
 }
 variable "public_subnet_ids" {
   description = "List of public subnet IDs"
-  type        = list
+  type        = list(any)
 }
 variable "alb_sg" {
   description = "List of ALB Security Groups"

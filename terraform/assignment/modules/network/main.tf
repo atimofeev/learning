@@ -3,8 +3,8 @@ resource "aws_vpc" "vpc_main" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
-  tags                 = {
-    Name               = "Main ${upper(var.env)} VPC"
+  tags = {
+    Name = "Main ${upper(var.env)} VPC"
   }
 }
 
@@ -16,8 +16,8 @@ resource "aws_subnet" "public" {
   vpc_id            = aws_vpc.vpc_main.id
   cidr_block        = cidrsubnet(var.vpc_cidr, var.newbits, count.index)
   availability_zone = element(data.aws_availability_zones.available.names, count.index)
-  tags              = {
-    Name            = "${var.project}-${var.env}-public-sn-${count.index}"
+  tags = {
+    Name = "${var.project}-${var.env}-public-sn-${count.index}"
   }
 }
 
@@ -26,15 +26,15 @@ resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.vpc_main.id
   cidr_block        = cidrsubnet(var.vpc_cidr, var.newbits, count.index + 2)
   availability_zone = element(data.aws_availability_zones.available.names, count.index)
-  tags              = {
-    Name            = "${var.project}-${var.env}-private-sn-${count.index}"
+  tags = {
+    Name = "${var.project}-${var.env}-private-sn-${count.index}"
   }
 }
 
 # ----- Internet Gateway ----- #
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc_main.id
-  tags   = {
+  tags = {
     Name = "${var.project}-${var.env}-igw"
   }
 }
@@ -46,14 +46,14 @@ resource "aws_route_table" "public" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
-  tags   = {
+  tags = {
     Name = "${var.project}-${var.env}-public-rt"
   }
 }
 
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.vpc_main.id
-  tags   = {
+  tags = {
     Name = "${var.project}-${var.env}-private-rt"
   }
 }

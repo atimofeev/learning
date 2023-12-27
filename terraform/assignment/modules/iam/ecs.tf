@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "ecs_tasks" {
   }
 
   statement {
-    actions =[
+    actions = [
       "kms:Decrypt",
       "kms:Encrypt",
       "kms:ReEncrypt*",
@@ -59,8 +59,8 @@ data "aws_iam_policy_document" "ecs_tasks_assume_role" {
 }
 
 resource "aws_iam_policy" "ecs_tasks" {
-  name               = "${var.project}-${var.env}-ecs-tasks-execution"
-  policy             = data.aws_iam_policy_document.ecs_tasks.json
+  name   = "${var.project}-${var.env}-ecs-tasks-execution"
+  policy = data.aws_iam_policy_document.ecs_tasks.json
 }
 
 resource "aws_iam_role" "ecs_tasks" {
@@ -69,6 +69,6 @@ resource "aws_iam_role" "ecs_tasks" {
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_tasks" {
-  role               = aws_iam_role.ecs_tasks.name
-  policy_arn         = aws_iam_policy.ecs_tasks.arn
+  role       = aws_iam_role.ecs_tasks.name
+  policy_arn = aws_iam_policy.ecs_tasks.arn
 }

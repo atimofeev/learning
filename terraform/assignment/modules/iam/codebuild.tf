@@ -27,7 +27,7 @@ data "aws_iam_policy_document" "codebuild" {
     resources = ["*"]
   }
   statement {
-    sid     = "ArtifactsS3BucketItems"
+    sid = "ArtifactsS3BucketItems"
     actions = [
       "s3:GetObject",
       "s3:PutObject",
@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "codebuild" {
     resources = ["arn:aws:s3:::${var.project}-${var.env}-artifacts/*"]
   }
   statement {
-    sid     = "ArtifactsS3BucketList"
+    sid = "ArtifactsS3BucketList"
     actions = [
       "s3:ListBucket"
     ]

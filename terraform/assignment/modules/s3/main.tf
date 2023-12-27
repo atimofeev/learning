@@ -5,7 +5,7 @@ resource "random_string" "bucket" {
   lower   = true
   numeric = true
   keepers = {
-    env   = var.env
+    env = var.env
   }
 }
 
