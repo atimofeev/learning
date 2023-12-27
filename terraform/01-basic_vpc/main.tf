@@ -31,8 +31,8 @@ resource "aws_route_table" "test_public_rt" {
 }
 
 resource "aws_subnet" "test_public_sn_a" {
-  vpc_id = aws_vpc.test_vpc.id
-  cidr_block = "10.0.1.0/24"
+  vpc_id            = aws_vpc.test_vpc.id
+  cidr_block        = "10.0.1.0/24"
   availability_zone = "eu-north-1a"
   tags = {
     Name = "test_public_sn_a"
@@ -40,8 +40,8 @@ resource "aws_subnet" "test_public_sn_a" {
 }
 
 resource "aws_subnet" "test_private_sn_b" {
-  vpc_id = aws_vpc.test_vpc.id
-  cidr_block = "10.0.2.0/24"
+  vpc_id            = aws_vpc.test_vpc.id
+  cidr_block        = "10.0.2.0/24"
   availability_zone = "eu-north-1b"
   tags = {
     Name = "test_private_sn_b"
@@ -49,7 +49,7 @@ resource "aws_subnet" "test_private_sn_b" {
 }
 
 resource "aws_route_table_association" "test_public_rt_ass" {
-  subnet_id = aws_subnet.test_public_sn_a.id
+  subnet_id      = aws_subnet.test_public_sn_a.id
   route_table_id = aws_route_table.test_public_rt.id
 }
 
@@ -58,7 +58,7 @@ data "http" "myip" {
 }
 
 resource "aws_security_group" "test_public_sg" {
-  name = "allow web traffic"
+  name   = "allow web traffic"
   vpc_id = aws_vpc.test_vpc.id
 
   dynamic "ingress" {
@@ -84,7 +84,7 @@ resource "aws_security_group" "test_public_sg" {
 }
 
 resource "aws_security_group" "test_private_sg" {
-  name = "allow local ssh"
+  name   = "allow local ssh"
   vpc_id = aws_vpc.test_vpc.id
 
   ingress {
@@ -107,28 +107,28 @@ resource "aws_security_group" "test_private_sg" {
 }
 
 resource "aws_network_interface" "test_public_ni" {
-  subnet_id = aws_subnet.test_public_sn_a.id
-  private_ips = ["10.0.1.50"]
-  security_groups = [ aws_security_group.test_public_sg.id ]
+  subnet_id       = aws_subnet.test_public_sn_a.id
+  private_ips     = ["10.0.1.50"]
+  security_groups = [aws_security_group.test_public_sg.id]
   tags = {
     Name = "test_public_ni"
   }
 }
 
 resource "aws_network_interface" "test_private_ni" {
-  subnet_id = aws_subnet.test_private_sn_b.id
-  private_ips = ["10.0.2.25"]
-  security_groups = [ aws_security_group.test_private_sg.id ]
+  subnet_id       = aws_subnet.test_private_sn_b.id
+  private_ips     = ["10.0.2.25"]
+  security_groups = [aws_security_group.test_private_sg.id]
   tags = {
     Name = "test_private_ni"
   }
 }
 
 resource "aws_eip" "test_public_ip_address" {
-  domain = "vpc"
-  network_interface = aws_network_interface.test_public_ni.id
+  domain                    = "vpc"
+  network_interface         = aws_network_interface.test_public_ni.id
   associate_with_private_ip = aws_network_interface.test_public_ni.private_ip
-  depends_on = [ aws_internet_gateway.test_public_gw ]
+  depends_on                = [aws_internet_gateway.test_public_gw]
   tags = {
     Name = "test_public_ip_address"
   }
@@ -145,17 +145,17 @@ resource "aws_key_pair" "test_private_key" {
 }
 
 data "aws_key_pair" "private_key" {
-  key_name   = "private_key"
+  key_name = "private_key"
 }
 
 resource "aws_instance" "test_public_instance" {
-  ami           = "ami-04e4606740c9c9381"
-  instance_type = "t3.micro"
+  ami               = "ami-04e4606740c9c9381"
+  instance_type     = "t3.micro"
   availability_zone = "eu-north-1a"
-  key_name = aws_key_pair.test_public_key.key_name
+  key_name          = aws_key_pair.test_public_key.key_name
 
   network_interface {
-    device_index = 0
+    device_index         = 0
     network_interface_id = aws_network_interface.test_public_ni.id
   }
 
@@ -170,24 +170,24 @@ resource "aws_instance" "test_public_instance" {
               EOF
 
   tags = {
-    Name = "test_public_instance"
+    Name     = "test_public_instance"
     test_tag = "test_tag_value"
   }
 }
 
 resource "aws_instance" "test_private_instance" {
-  ami           = "ami-04e4606740c9c9381"
-  instance_type = "t3.micro"
+  ami               = "ami-04e4606740c9c9381"
+  instance_type     = "t3.micro"
   availability_zone = "eu-north-1b"
-  key_name = data.aws_key_pair.private_key.key_name
+  key_name          = data.aws_key_pair.private_key.key_name
 
   network_interface {
-    device_index = 0
+    device_index         = 0
     network_interface_id = aws_network_interface.test_private_ni.id
   }
 
   tags = {
-    Name = "test_private_instance"
+    Name     = "test_private_instance"
     test_tag = "test_tag_value2"
   }
 }
